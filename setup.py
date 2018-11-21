@@ -32,12 +32,11 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="mu_build",
-    version="0.2.0",
+    version="0.2.1",
     author="Max Knutsen",
     author_email="maknutse@microsoft.com",
     description="Builds code based on a provided config file",
     long_description=long_description,
-    long_description_content_type="text/markdown",
     url="https://github.com/microsoft/mu_pip_build",
     license='BSD2',
     packages=setuptools.find_packages(),
@@ -47,6 +46,6 @@ setuptools.setup(
     install_requires=[
           'pyyaml',
           'mu_python_library>=0.2.0',
-          'mu_environment>=0.2.0'
+          'mu_environment>=0.2.1'
     ]
 )
