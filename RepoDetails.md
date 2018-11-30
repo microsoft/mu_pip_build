@@ -24,11 +24,19 @@ Please open any issues in the Project Mu GitHub tracker. [More Details](https://
 ## Contributing Code or Docs
 
 Please follow the general Project Mu Pull Request process.  [More Details](https://microsoft.github.io/mu/How/contributing/)
+Additionally make sure all testing described in the "Development" section passes.  
 
-## Installing
+## Using
 
-Install from pip with `pip install mu_build`
-Install from source with `pip install -e .`
+[Usage Details](using.md)
+
+## Development
+
+[Development Details](developing.md)
+
+## Publish
+
+[Publish Details](publishing.md)
 
 ## Copyright & License
 

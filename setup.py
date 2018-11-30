@@ -1,4 +1,4 @@
-## @file setup.py
+# @file setup.py
 # This contains setup info for mu_build pip module
 #
 ##
@@ -40,12 +40,18 @@ setuptools.setup(
     url="https://github.com/microsoft/mu_pip_build",
     license='BSD2',
     packages=setuptools.find_packages(),
-    entry_points = {
-        'console_scripts': ['mu_build=MuBuild.MuBuild:main'],
+    entry_points={
+        'console_scripts': ['mu_build=MuBuild.MuBuild:main']
     },
     install_requires=[
-          'pyyaml',
-          'mu_python_library>=0.2.0',
-          'mu_environment>=0.2.1'
+        'pyyaml',
+        'mu_python_library>=0.2.0',
+        'mu_environment>=0.2.1'
+    ],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha"
     ]
 )

@@ -1,6 +1,6 @@
-## @file MuLogging.py
+# @file MuLogging.py
 # Handle basic logging config for Project Mu Builds
-# MuBuild splits logs into a master log and per package.  
+# MuBuild splits logs into a master log and per package.
 #
 ##
 # Copyright (c) 2018, Microsoft Corporation
@@ -28,53 +28,54 @@
 import logging
 import sys
 from datetime import datetime
-from datetime import date
 import os
 import shutil
 
+
 def clean_build_logs(ws):
-     # Make sure that we have a clean environment.
+    # Make sure that we have a clean environment.
     if os.path.isdir(os.path.join(ws, "Build", "BuildLogs")):
         shutil.rmtree(os.path.join(ws, "Build", "BuildLogs"))
 
-def setup_logging(workspace, filename=None, loghandle = None):
+
+def setup_logging(workspace, filename=None, loghandle=None):
 
     if loghandle is not None:
         stop_logging(loghandle)
 
     logging_level = logging.DEBUG
-    
+
     if filename is None:
         filename = "BUILDLOG_MASTER.txt"
         logging_level = logging.DEBUG
-    
-    #setup logger
+
+    # setup logger
     logger = logging.getLogger('')
     logger.setLevel(logging.DEBUG)
 
     if len(logger.handlers) == 0:
-        #Create the main console as logger
+        # Create the main console as logger
         formatter = logging.Formatter("%(levelname)s- %(message)s")
         console = logging.StreamHandler()
         console.setLevel(logging.DEBUG)
         console.setFormatter(formatter)
         logger.addHandler(console)
 
-    
     logfile = os.path.join(workspace, "Build", "BuildLogs", filename)
     if(not os.path.isdir(os.path.dirname(logfile))):
         os.makedirs(os.path.dirname(logfile))
-    
-    #Create master file logger
+
+    # Create master file logger
     fileformatter = logging.Formatter("%(levelname)s - %(message)s")
     filelogger = logging.FileHandler(filename=(logfile), mode='w')
     filelogger.setLevel(logging_level)
     filelogger.setFormatter(fileformatter)
     logger.addHandler(filelogger)
-    logging.info("Log Started: " + datetime.strftime(datetime.now(), "%A, %B %d, %Y %I:%M%p" ))
+    logging.info("Log Started: " + datetime.strftime(datetime.now(), "%A, %B %d, %Y %I:%M%p"))
     logging.info("Running Python version: " + str(sys.version_info))
 
-    return logfile,filelogger
+    return logfile, filelogger
+
 
 def stop_logging(loghandle):
     loghandle.close()
