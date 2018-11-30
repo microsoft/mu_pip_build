@@ -15,16 +15,17 @@
 # this list of conditions and the following disclaimer in the documentation
 # and/or other materials provided with the distribution.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCEOR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 ##
 import os
 import sys
@@ -52,6 +53,9 @@ def get_mu_config():
     parser.add_argument('-ignore', '--ignore-git', dest="git_ignore", action="store_true", help="Whether to ignore errors in the git cloing process", default=False)
     parser.add_argument('-force', '--force-git', dest="git_force", action="store_true", help="Whether to force git repos to clone in the git cloing process", default=False)
     parser.add_argument('-update-git', '--update-git', dest="git_update", action="store_true", help="Whether to update git repos as needed in the git cloing process", default=False)
+    parser.add_argument('-color', '--azure-color', dest="use_azure_color", action="store_true", help="Whether to use Azure color instead of ANSI color codes when printing to the terminal", default=False)
+    parser.add_argument('-nocolor', '--disable-color', dest="color_enabled", action="store_false", help="Whether to use disable all color outputs", default=True)
+
     args, sys.argv = parser.parse_known_args()
     return args
 
@@ -92,11 +96,13 @@ def main():
     # have a build config file
     with open(mu_config_filepath, 'r') as mu_config_file:
         mu_config = yaml.safe_load(mu_config_file)
-    WORKSPACE_PATH = os.path.realpath(os.path.join(os.path.dirname(mu_config_filepath), mu_config["RelativeWorkspaceRoot"]))
+    WORKSPACE_PATH = os.path.realpath(os.path.join(os.path.dirname(
+        mu_config_filepath), mu_config["RelativeWorkspaceRoot"]))
 
     # Setup the logging to the file as well as the console
     MuLogging.clean_build_logs(WORKSPACE_PATH)
-    MuLogging.setup_logging(WORKSPACE_PATH)
+    MuLogging.setup_logging(
+        WORKSPACE_PATH, use_azure_colors=buildArgs.use_azure_color, use_color=buildArgs.color_enabled)
 
     # Get scopes from config file
     if "Scopes" in mu_config:
@@ -147,7 +153,8 @@ def main():
             if(temp is not None):
                 packageList.append(temp)
             else:
-                logging.critical("pkg-dir invalid absolute path: {0}".format(mu_pk_path))
+                logging.critical(
+                    "pkg-dir invalid absolute path: {0}".format(mu_pk_path))
                 raise Exception("Invalid Package Path")
         else:
             # Check if relative path
@@ -156,11 +163,13 @@ def main():
             if(temp is not None):
                 packageList.append(temp)
             else:
-                logging.critical("pkg-dir invalid relative path: {0}".format(mu_pk_path))
+                logging.critical(
+                    "pkg-dir invalid relative path: {0}".format(mu_pk_path))
                 raise Exception("Invalid Package Path")
 
     # Bring up the common minimum environment.
-    (build_env, shell_env) = SelfDescribingEnvironment.BootstrapEnvironment(edk2path.WorkspacePath, PROJECT_SCOPES)
+    (build_env, shell_env) = SelfDescribingEnvironment.BootstrapEnvironment(
+        edk2path.WorkspacePath, PROJECT_SCOPES)
     CommonBuildEntry.update_process(edk2path.WorkspacePath, PROJECT_SCOPES)
     env = ShellEnvironment.GetBuildVars()
 
@@ -176,7 +185,8 @@ def main():
 
     # Load plugins
     pluginManager = PluginManager.PluginManager()
-    failedPlugins = pluginManager.SetListOfEnvironmentDescriptors(build_env.plugins)
+    failedPlugins = pluginManager.SetListOfEnvironmentDescriptors(
+        build_env.plugins)
     if failedPlugins:
         logging.critical("One or more plugins failed to load. Halting build.")
         for a in failedPlugins:
@@ -196,14 +206,15 @@ def main():
         #
         # run all loaded MuBuild Plugins/Tests
         #
+        logging.critical("Running on Package: {0}".format(pkgToRunOn))
         ts = JunitReport.create_new_testsuite(pkgToRunOn, "MuBuild.{0}.{1}".format(mu_config["GroupName"], pkgToRunOn))
         _, loghandle = MuLogging.setup_logging(WORKSPACE_PATH, "BUILDLOG_{0}.txt".format(pkgToRunOn))
-        logging.info("Package Running: {0}".format(pkgToRunOn))
         ShellEnvironment.CheckpointBuildVars()
         env = ShellEnvironment.GetBuildVars()
 
         # load the package level .mu.json
-        pkg_config_file = edk2path.GetAbsolutePathOnThisSytemFromEdk2RelativePath(os.path.join(pkgToRunOn, pkgToRunOn + ".mu.yaml"))
+        pkg_config_file = edk2path.GetAbsolutePathOnThisSytemFromEdk2RelativePath(
+            os.path.join(pkgToRunOn, pkgToRunOn + ".mu.yaml"))
         if(pkg_config_file):
             with open(pkg_config_file, 'r') as f:
                 pkg_config = yaml.safe_load(f)
@@ -238,7 +249,8 @@ def main():
                 # Check if need to skip this particular plugin
                 if "skip" in pkg_plugin_configuration and pkg_plugin_configuration["skip"]:
                     tc.SetSkipped()
-                    logging.critical("  ->Test Skipped! %s" % Descriptor.Name)
+                    logging.critical("  --->Test Skipped! %s" %
+                                     Descriptor.Name)
                 else:
                     try:
                         #   - package is the edk2 path to package.  This means workspace/packagepath relative.
@@ -250,34 +262,39 @@ def main():
                         #   - Plugin Manager Instance
                         #   - Plugin Helper Obj Instance
                         #   - testcase Object used for outputing junit results
-                        rc = Descriptor.Obj.RunBuildPlugin(pkgToRunOn, edk2path, sys.argv, mu_config, pkg_plugin_configuration, env, pluginManager, helper, tc)
+                        rc = Descriptor.Obj.RunBuildPlugin(
+                            pkgToRunOn, edk2path, sys.argv, mu_config, pkg_plugin_configuration, env, pluginManager, helper, tc)
                     except Exception as exp:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         logging.critical("EXCEPTION: {0}".format(exp))
                         exceptionPrint = traceback.format_exception(type(exp), exp, exc_traceback)
                         logging.critical(" ".join(exceptionPrint))
-                        tc.SetError("Exception: {0}".format(exp), "UNEXPECTED EXCEPTION")
+                        tc.SetError("Exception: {0}".format(
+                            exp), "UNEXPECTED EXCEPTION")
                         rc = 1
 
                     if(rc != 0):
                         failure_num += 1
                         if(rc is None):
-                            logging.error("Test Failed: %s returned NoneType" % Descriptor.Name)
+                            logging.error(
+                                "  --->Test Failed: %s returned NoneType" % Descriptor.Name)
                         else:
-                            logging.error("Test Failed: %s returned %d" % (Descriptor.Name, rc))
+                            logging.error(
+                                "  --->Test Failed: %s returned %d" % (Descriptor.Name, rc))
                     else:
-                        logging.info("Test Success {0} {1}".format(Descriptor.Name, target))
+                        logging.info("  --->Test Success {0} {1}".format(Descriptor.Name, target))
 
                 # revert to the checkpoint we created previously
                 ShellEnvironment.RevertBuildVars()
             # finished target loop
         # Finished plugin loop
 
-        MuLogging.stop_logging(loghandle)  # stop the logging for this particularbuild file
+        MuLogging.stop_logging(loghandle)  # stop the logging for this particular buildfile
         ShellEnvironment.RevertBuildVars()
     # Finished buildable file loop
 
-    JunitReport.Output(os.path.join(WORKSPACE_PATH, "Build", "BuildLogs", "TestSuites.xml"))
+    JunitReport.Output(os.path.join(WORKSPACE_PATH, "Build",
+                                    "BuildLogs", "TestSuites.xml"))
 
     # Print Overall Success
     if(failure_num != 0):

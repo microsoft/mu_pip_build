@@ -14,22 +14,24 @@
 # this list of conditions and the following disclaimer in the documentation
 # and/or other materials provided with the distribution.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCEOR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 ##
 import logging
 import sys
 from datetime import datetime
 import os
 import shutil
+from MuBuild import MuAnsiHandler
 
 
 def clean_build_logs(ws):
@@ -38,7 +40,10 @@ def clean_build_logs(ws):
         shutil.rmtree(os.path.join(ws, "Build", "BuildLogs"))
 
 
-def setup_logging(workspace, filename=None, loghandle=None):
+def setup_logging(workspace, filename=None,
+                  loghandle=None,
+                  use_color=True,
+                  use_azure_colors=False):
 
     if loghandle is not None:
         stop_logging(loghandle)
@@ -55,9 +60,15 @@ def setup_logging(workspace, filename=None, loghandle=None):
 
     if len(logger.handlers) == 0:
         # Create the main console as logger
-        formatter = logging.Formatter("%(levelname)s- %(message)s")
-        console = logging.StreamHandler()
-        console.setLevel(logging.DEBUG)
+        if use_azure_colors or use_color:
+            formatter = MuAnsiHandler.ColoredFormatter(
+                "%(levelname)s - %(message)s", use_azure=use_azure_colors)
+            console = MuAnsiHandler.ColoredStreamHandler()
+        else:
+            formatter = logging.Formatter(
+                "%(levelname)s - %(message)s")
+            console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
         console.setFormatter(formatter)
         logger.addHandler(console)
 
