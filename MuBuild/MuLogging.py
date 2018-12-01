@@ -40,6 +40,7 @@ def clean_build_logs(ws):
         shutil.rmtree(os.path.join(ws, "Build", "BuildLogs"))
 
 
+# called to setup Buildlog_master as well as buildlogs for the individual packages
 def setup_logging(workspace, filename=None,
                   loghandle=None,
                   use_color=True,
@@ -57,35 +58,42 @@ def setup_logging(workspace, filename=None,
     # setup logger
     logger = logging.getLogger('')
     logger.setLevel(logging.DEBUG)
+    default_formatter = logging.Formatter("%(levelname)s - %(message)s")
 
     if len(logger.handlers) == 0:
         # Create the main console as logger
-        if use_azure_colors or use_color:
-            formatter = MuAnsiHandler.ColoredFormatter(
-                "%(levelname)s - %(message)s", use_azure=use_azure_colors)
-            console = MuAnsiHandler.ColoredStreamHandler()
-        else:
-            formatter = logging.Formatter(
-                "%(levelname)s - %(message)s")
-            console = logging.StreamHandler()
-        console.setLevel(logging.INFO)
-        console.setFormatter(formatter)
-        logger.addHandler(console)
+        handler = setup_console_logging(use_azure_colors, use_color, level=logging.INFO)
+        logger.addHandler(handler)
 
     logfile = os.path.join(workspace, "Build", "BuildLogs", filename)
     if(not os.path.isdir(os.path.dirname(logfile))):
         os.makedirs(os.path.dirname(logfile))
 
-    # Create master file logger
-    fileformatter = logging.Formatter("%(levelname)s - %(message)s")
+    # Create file logger
     filelogger = logging.FileHandler(filename=(logfile), mode='w')
     filelogger.setLevel(logging_level)
-    filelogger.setFormatter(fileformatter)
+    filelogger.setFormatter(default_formatter)
     logger.addHandler(filelogger)
+
     logging.info("Log Started: " + datetime.strftime(datetime.now(), "%A, %B %d, %Y %I:%M%p"))
     logging.info("Running Python version: " + str(sys.version_info))
 
     return logfile, filelogger
+
+
+# sets up a colored console logger
+def setup_console_logging(use_azure_colors, use_color=True, level=logging.INFO, formatter_msg="%(levelname)s - %(message)s"):
+    if use_azure_colors or use_color:
+        formatter = MuAnsiHandler.ColoredFormatter(formatter_msg, use_azure=use_azure_colors)
+        console = MuAnsiHandler.ColoredStreamHandler()
+    else:
+        formatter = logging.Formatter(formatter_msg)
+        console = logging.StreamHandler()
+
+    console.setLevel(level)
+    console.setFormatter(formatter)
+
+    return console
 
 
 def stop_logging(loghandle):
