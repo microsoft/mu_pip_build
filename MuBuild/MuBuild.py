@@ -124,6 +124,7 @@ def main():
 
     # Check Dependencies for Repo
     if "Dependencies" in mu_config:
+        logging.log(MuLogging.SECTION, "Resolving Git Repos")
         pplist.extend(RepoResolver.resolve_all(WORKSPACE_PATH, mu_config["Dependencies"], ignore=buildArgs.git_ignore, force=buildArgs.git_force, update_ok=buildArgs.git_update))
 
     # make Edk2Path object to handle all path operations
@@ -168,6 +169,7 @@ def main():
                 raise Exception("Invalid Package Path")
 
     # Bring up the common minimum environment.
+    logging.log(MuLogging.SECTION, "Bootstrapping Enviroment")
     (build_env, shell_env) = SelfDescribingEnvironment.BootstrapEnvironment(
         edk2path.WorkspacePath, PROJECT_SCOPES)
     CommonBuildEntry.update_process(edk2path.WorkspacePath, PROJECT_SCOPES)
@@ -184,6 +186,7 @@ def main():
     total_num = 0
 
     # Load plugins
+    logging.log(MuLogging.SECTION, "Loading plugins")
     pluginManager = PluginManager.PluginManager()
     failedPlugins = pluginManager.SetListOfEnvironmentDescriptors(
         build_env.plugins)
@@ -206,7 +209,8 @@ def main():
         #
         # run all loaded MuBuild Plugins/Tests
         #
-        logging.critical("Running on Package: {0}".format(pkgToRunOn))
+        logging.log(MuLogging.SECTION, "Building {0} Package".format(pkgToRunOn))
+        logging.info("Running on Package: {0}".format(pkgToRunOn))
         ts = JunitReport.create_new_testsuite(pkgToRunOn, "MuBuild.{0}.{1}".format(mu_config["GroupName"], pkgToRunOn))
         _, loghandle = MuLogging.setup_logging(WORKSPACE_PATH, "BUILDLOG_{0}.txt".format(pkgToRunOn))
         ShellEnvironment.CheckpointBuildVars()
