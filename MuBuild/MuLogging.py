@@ -32,6 +32,7 @@ from datetime import datetime
 import os
 import shutil
 from MuBuild import MuAnsiHandler
+from MuBuild import MuStringHandler
 
 
 def clean_build_logs(ws):
@@ -99,3 +100,17 @@ def setup_console_logging(use_azure_colors, use_color=True, level=logging.INFO, 
 def stop_logging(loghandle):
     loghandle.close()
     logging.getLogger('').removeHandler(loghandle)
+
+
+def create_output_stream(level=logging.INFO):
+    # creates an output stream that is in memory
+    handler = MuStringHandler.StringStreamHandler()
+    logger = logging.getLogger('')
+    handler.setLevel(level)
+    logger.addHandler(handler)
+    return handler
+
+
+def remove_output_stream(handler):
+    logger = logging.getLogger('')
+    logger.removeHandler(handler)

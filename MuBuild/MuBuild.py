@@ -241,6 +241,9 @@ def main():
                 (testcasename, testclassname) = Descriptor.Obj.GetTestName(pkgToRunOn, env)
                 tc = ts.create_new_testcase(testcasename, testclassname)
 
+                # create the stream for the build log
+                plugin_output_stream = MuLogging.create_output_stream()
+
                 # merge the repo level and package level for this specific plugin
                 pkg_plugin_configuration = merge_config(mu_config, pkg_config, Descriptor.descriptor)
 
@@ -262,8 +265,9 @@ def main():
                         #   - Plugin Manager Instance
                         #   - Plugin Helper Obj Instance
                         #   - testcase Object used for outputing junit results
+                        #   - output_stream the StringIO output stream from this plugin
                         rc = Descriptor.Obj.RunBuildPlugin(
-                            pkgToRunOn, edk2path, sys.argv, mu_config, pkg_plugin_configuration, env, pluginManager, helper, tc)
+                            pkgToRunOn, edk2path, sys.argv, mu_config, pkg_plugin_configuration, env, pluginManager, helper, tc, plugin_output_stream)
                     except Exception as exp:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         logging.critical("EXCEPTION: {0}".format(exp))
@@ -286,6 +290,8 @@ def main():
 
                 # revert to the checkpoint we created previously
                 ShellEnvironment.RevertBuildVars()
+                # remove the logger
+                MuLogging.remove_output_stream(plugin_output_stream)
             # finished target loop
         # Finished plugin loop
 
