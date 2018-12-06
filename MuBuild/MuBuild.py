@@ -41,7 +41,7 @@ from MuEnvironment import PluginManager
 from MuEnvironment import CommonBuildEntry
 from MuEnvironment import ShellEnvironment
 from MuEnvironment import RepoResolver
-from MuBuild import MuLogging
+from MuEnvironment import MuLogging
 from MuBuild import ConfigValidator
 import pkg_resources
 
