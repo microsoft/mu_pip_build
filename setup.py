@@ -32,26 +32,27 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="mu_build",
-    version="0.2.1",
-    author="Max Knutsen",
+    author="Project Mu Team",
     author_email="maknutse@microsoft.com",
-    description="Builds code based on a provided config file",
+    description="Supports CI build operations for Project Mu based firmware",
     long_description=long_description,
     url="https://github.com/microsoft/mu_pip_build",
     license='BSD2',
     packages=setuptools.find_packages(),
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     entry_points={
         'console_scripts': ['mu_build=MuBuild.MuBuild:main']
     },
     install_requires=[
         'pyyaml',
-        'mu_python_library>=0.2.0',
-        'mu_environment>=0.2.1'
+        'mu_environment>=0.3.0',
+        'mu_python_library>=0.3.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha"
+        "Development Status :: 4 - Beta"
     ]
 )

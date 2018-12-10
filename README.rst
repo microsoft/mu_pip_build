@@ -12,12 +12,12 @@ This is the entrypoint into the CI / Pull Request build and test infrastructure.
 Version History
 ===============
 
-0.2.1
+0.3.0
 -----
 
-Updating to new version of MU Environment
+Updated documentation and release process.  Transition to Beta.
 
-0.2.0
------
+< 0.3.0
+-------
 
-Initial commit
+Alpha development
