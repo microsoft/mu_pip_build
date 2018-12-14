@@ -54,7 +54,7 @@ steps:
     reportDirectory: $(System.DefaultWorkingDirectory)/cov_html
   condition: succeededOrFailed()
 
-- script: flake8 . > flake8.err.log
+- script: flake8 . | Tee-Object flake8.err.log
   displayName: 'Run flake8'
   condition: succeededOrFailed()
 
