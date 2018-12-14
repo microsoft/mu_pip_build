@@ -48,13 +48,22 @@ import pkg_resources
 
 def get_mu_config():
     parser = argparse.ArgumentParser(description='Run the Mu Build')
-    parser.add_argument('-c', '--mu_config', dest='mu_config', required=True, type=str, help='Provide the Mu config relative to the current working directory')
-    parser.add_argument('-p', '--pkg', '--pkg-dir', dest='pkglist', nargs="+", type=str, help='A package or folder you want to test (abs path or cwd relative).  Can list multiple by doing -p <pkg1> <pkg2> <pkg3>', default=[])
-    parser.add_argument('-ignore', '--ignore-git', dest="git_ignore", action="store_true", help="Whether to ignore errors in the git cloing process", default=False)
-    parser.add_argument('-force', '--force-git', dest="git_force", action="store_true", help="Whether to force git repos to clone in the git cloing process", default=False)
-    parser.add_argument('-update-git', '--update-git', dest="git_update", action="store_true", help="Whether to update git repos as needed in the git cloing process", default=False)
-    parser.add_argument('-color', '--azure-color', dest="use_azure_color", action="store_true", help="Whether to use Azure color instead of ANSI color codes when printing to the terminal", default=False)
-    parser.add_argument('-nocolor', '--disable-color', dest="color_enabled", action="store_false", help="Whether to use disable all color outputs", default=True)
+    parser.add_argument('-c', '--mu_config', dest='mu_config', required=True, type=str,
+                        help='Provide the Mu config relative to the current working directory')
+    parser.add_argument('-p', '--pkg', '--pkg-dir', dest='pkglist', nargs="+", type=str,
+                        help='A package or folder you want to test (abs path or cwd relative).  '
+                        'Can list multiple by doing -p <pkg1> <pkg2> <pkg3>', default=[])
+    parser.add_argument('-ignore', '--ignore-git', dest="git_ignore", action="store_true",
+                        help="Whether to ignore errors in the git cloing process", default=False)
+    parser.add_argument('-force', '--force-git', dest="git_force", action="store_true",
+                        help="Whether to force git repos to clone in the git cloing process", default=False)
+    parser.add_argument('-update-git', '--update-git', dest="git_update", action="store_true",
+                        help="Whether to update git repos as needed in the git cloing process", default=False)
+    parser.add_argument('-color', '--azure-color', dest="use_azure_color", action="store_true",
+                        help="Whether to use Azure color instead of ANSI color codes when printing to the terminal",
+                        default=False)
+    parser.add_argument('-nocolor', '--disable-color', dest="color_enabled", action="store_false",
+                        help="Whether to use disable all color outputs", default=True)
 
     args, sys.argv = parser.parse_known_args()
     return args
@@ -125,7 +134,9 @@ def main():
     # Check Dependencies for Repo
     if "Dependencies" in mu_config:
         logging.log(MuLogging.SECTION, "Resolving Git Repos")
-        pplist.extend(RepoResolver.resolve_all(WORKSPACE_PATH, mu_config["Dependencies"], ignore=buildArgs.git_ignore, force=buildArgs.git_force, update_ok=buildArgs.git_update))
+        pplist.extend(RepoResolver.resolve_all(WORKSPACE_PATH, mu_config["Dependencies"],
+                      ignore=buildArgs.git_ignore, force=buildArgs.git_force,
+                      update_ok=buildArgs.git_update))
 
     # make Edk2Path object to handle all path operations
     edk2path = Edk2Path(WORKSPACE_PATH, pplist)
@@ -270,8 +281,9 @@ def main():
                         #   - Plugin Helper Obj Instance
                         #   - testcase Object used for outputing junit results
                         #   - output_stream the StringIO output stream from this plugin
-                        rc = Descriptor.Obj.RunBuildPlugin(
-                            pkgToRunOn, edk2path, sys.argv, mu_config, pkg_plugin_configuration, env, pluginManager, helper, tc, plugin_output_stream)
+                        rc = Descriptor.Obj.RunBuildPlugin(pkgToRunOn, edk2path, sys.argv, mu_config,
+                                                           pkg_plugin_configuration, env, pluginManager, helper,
+                                                           tc, plugin_output_stream)
                     except Exception as exp:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         logging.critical("EXCEPTION: {0}".format(exp))
