@@ -179,7 +179,8 @@ def check_mu_confg(config, edk2path, pluginList):
             config_type = str(type(config[rule]).__name__)
             wanted_type = config_rules["required"][rule]["type"]
             if config_type != wanted_type:
-                _mu_error("{0} is a required attribute and is not the correct type. We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
+                _mu_error("{0} is a required attribute and is not the correct type. "
+                          "We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
 
         if "validator" in config_rules["required"][rule]:
             validator = config_rules["required"][rule]["validator"]
@@ -194,7 +195,8 @@ def check_mu_confg(config, edk2path, pluginList):
             config_type = str(type(config[rule]).__name__)
             wanted_type = config_rules["optional"][rule]["type"]
             if config_type != wanted_type:
-                _mu_error("{0} is a optional attribute and is not the correct type. We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
+                _mu_error("{0} is a optional attribute and is not the correct type. "
+                          "We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
 
         if "validator" in config_rules["optional"][rule]:
             validator = config_rules["optional"][rule]["validator"]
@@ -272,7 +274,8 @@ def check_package_confg(name, config, pluginList):
             config_type = str(type(config[rule]).__name__)
             wanted_type = config_rules["required"][rule]["type"]
             if config_type != wanted_type:
-                _mu_error("{0} is a required attribute and is not the correct type. We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
+                _mu_error("{0} is a required attribute and is not the correct type. "
+                          "We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
 
         if "validator" in config_rules["required"][rule]:
             validator = config_rules["required"][rule]["validator"]
@@ -287,7 +290,8 @@ def check_package_confg(name, config, pluginList):
             config_type = str(type(config[rule]).__name__)
             wanted_type = config_rules["optional"][rule]["type"]
             if config_type != wanted_type:
-                _mu_error("{0} is a optional attribute and is not the correct type. We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
+                _mu_error("{0} is a optional attribute and is not the correct type. "
+                          "We are expecting a {1} and got a {2}".format(rule, config_type, wanted_type))
 
         if "validator" in config_rules["optional"][rule]:
             validator = config_rules["optional"][rule]["validator"]
