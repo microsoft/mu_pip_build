@@ -47,7 +47,19 @@ import pkg_resources
 
 
 def get_mu_config():
-    parser = argparse.ArgumentParser(description='Run the Mu Build')
+    # This should live somewhere else as soon as someone else needs the logic.
+    # I just don't want to introduce a version dependency at this exact moment.
+    class IntermediateArgParser(argparse.ArgumentParser):
+        def parse_known_args(self, args=None, namespace=None):
+            # Explicitly pass sys.argv so that the script path isn't stripped off.
+            return super(IntermediateArgParser, self).parse_known_args(args if args else sys.argv, namespace)
+
+        def error(self, message):
+            raise RuntimeError(message)
+
+    # We will disable the help on this parser, because it's only for convenience.
+    parser = IntermediateArgParser(add_help=False, usage=None)
+
     parser.add_argument('-c', '--mu_config', dest='mu_config', required=True, type=str,
                         help='Provide the Mu config relative to the current working directory')
     parser.add_argument('-p', '--pkg', '--pkg-dir', dest='pkglist', nargs="+", type=str,
