@@ -122,8 +122,15 @@ def main():
 
     # Setup the logging to the file as well as the console
     MuLogging.clean_build_logs(WORKSPACE_PATH)
-    MuLogging.setup_logging(
-        WORKSPACE_PATH, use_azure_colors=buildArgs.use_azure_color, use_color=buildArgs.color_enabled)
+
+    buildlog_path = os.path.join(WORKSPACE_PATH, "Build", "BuildLogs")
+    logging.getLogger("").setLevel(logging.NOTSET)
+    filename = "BUILDLOG_MASTER"
+    MuLogging.setup_section_level()
+    MuLogging.setup_txt_logger(buildlog_path, filename)
+    MuLogging.setup_markdown_logger(buildlog_path, filename)
+    MuLogging.setup_console_logging(use_azure_colors=buildArgs.use_azure_color,
+                                    use_color=buildArgs.color_enabled, logging_level=logging.WARNING)
 
     # Get scopes from config file
     if "Scopes" in mu_config:
@@ -147,8 +154,8 @@ def main():
     if "Dependencies" in mu_config:
         logging.log(MuLogging.SECTION, "Resolving Git Repos")
         pplist.extend(RepoResolver.resolve_all(WORKSPACE_PATH, mu_config["Dependencies"],
-                      ignore=buildArgs.git_ignore, force=buildArgs.git_force,
-                      update_ok=buildArgs.git_update))
+                                               ignore=buildArgs.git_ignore, force=buildArgs.git_force,
+                                               update_ok=buildArgs.git_update))
 
     # make Edk2Path object to handle all path operations
     edk2path = Edk2Path(WORKSPACE_PATH, pplist)
@@ -235,7 +242,12 @@ def main():
         logging.log(MuLogging.SECTION, "Building {0} Package".format(pkgToRunOn))
         logging.info("Running on Package: {0}".format(pkgToRunOn))
         ts = JunitReport.create_new_testsuite(pkgToRunOn, "MuBuild.{0}.{1}".format(mu_config["GroupName"], pkgToRunOn))
-        _, loghandle = MuLogging.setup_logging(WORKSPACE_PATH, "BUILDLOG_{0}.txt".format(pkgToRunOn))
+        packagebuildlog_path = os.path.join(buildlog_path, pkgToRunOn)
+        _, txthandle = MuLogging.setup_txt_logger(
+            packagebuildlog_path, "BUILDLOG_{0}".format(pkgToRunOn), logging_level=logging.DEBUG, isVerbose=True)
+        _, mdhandle = MuLogging.setup_markdown_logger(
+            packagebuildlog_path, "BUILDLOG_{0}".format(pkgToRunOn), logging_level=logging.DEBUG, isVerbose=True)
+        loghandle = [txthandle, mdhandle]
         ShellEnvironment.CheckpointBuildVars()
         env = ShellEnvironment.GetBuildVars()
 
