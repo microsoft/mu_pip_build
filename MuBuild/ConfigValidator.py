@@ -42,7 +42,10 @@ Example_MU_CONFIG_FILE:
             Path: Silicon/Arm/Tiano
             Url: https://github.com/Microsoft/mu_silicon_arm_tiano.git
             Branch: release/20180529
+            ReferencePath: "../place"
+            Full: true
     PackagesPath:
+    ReferencePath: "../" # (omnicache)
 
     Packages:
         - MdeModulePkg
@@ -58,7 +61,7 @@ Example_MU_CONFIG_FILE:
         - X64
     DependencyCheckPlugin:
         skip: true
-    DscCheckPlugin
+    DscCheckPlugin:
         skip:true
 '''
 
@@ -98,7 +101,7 @@ def check_mu_confg(config, edk2path, pluginList):
                 _mu_error("{0} is not a valid target".format(target))
 
     def _check_dependencies(dependencies, name):
-        valid_attributes = ["Path", "Url", "Branch", "Commit"]
+        valid_attributes = ["Path", "Url", "Branch", "Commit", "ReferencePath", "Full"]
         for dependency in dependencies:
             # check to make sure we have a path
             if "Path" not in dependency:
@@ -113,6 +116,9 @@ def check_mu_confg(config, edk2path, pluginList):
                 _mu_error("You must have a commit or a branch dependency {0}".format(dependency))
             if "Branch" in dependency and "Commit" in dependency:
                 _mu_error("You cannot have both a commit or a branch dependency {0}".format(dependency))
+            if "ReferencePath" in dependency:
+                if dependency["ReferencePath"] is not None and not os.path.isdir(dependency["ReferencePath"]):
+                    _mu_error("This cache does not exist".format(dependency))
             # check to make sure we don't have something else in there
             for attribute in dependency:
                 if attribute not in valid_attributes:
@@ -157,6 +163,10 @@ def check_mu_confg(config, edk2path, pluginList):
             "Dependencies": {
                 "type": "list",
                 "validator": _check_dependencies
+            },
+            "OmnicachePath": {
+                "type": "str",
+                "validator": _is_valid_dir
             }
         }
     }

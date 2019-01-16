@@ -67,6 +67,8 @@ def get_mu_config():
                         'Can list multiple by doing -p <pkg1> <pkg2> <pkg3>', default=[])
     parser.add_argument('-ignore', '--ignore-git', dest="git_ignore", action="store_true",
                         help="Whether to ignore errors in the git cloing process", default=False)
+    parser.add_argument('--omnicache', '--reference', dest='omnicache_path',
+                        default=os.environ.get('OMNICACHE_PATH'))
     parser.add_argument('-force', '--force-git', dest="git_force", action="store_true",
                         help="Whether to force git repos to clone in the git cloing process", default=False)
     parser.add_argument('-update-git', '--update-git', dest="git_update", action="store_true",
@@ -100,11 +102,10 @@ def merge_config(mu_config, pkg_config, descriptor={}):
 
     return config
 
+
 #
 # Main driver of Project Mu Builds
 #
-
-
 def main():
     # Parse command line arguments
     PROJECT_SCOPES = ("project_mu",)
@@ -136,6 +137,12 @@ def main():
     if "Scopes" in mu_config:
         PROJECT_SCOPES += tuple(mu_config["Scopes"])
 
+    omnicache_path = None
+    if "ReferencePath" in mu_config:
+        omnicache_path = mu_config["ReferencePath"]
+    if buildArgs.omnicache_path is not None:
+        omnicache_path = buildArgs.omnicache_path
+
     # SET PACKAGE PATH
     #
     # Get Package Path from config file
@@ -155,7 +162,7 @@ def main():
         logging.log(MuLogging.SECTION, "Resolving Git Repos")
         pplist.extend(RepoResolver.resolve_all(WORKSPACE_PATH, mu_config["Dependencies"],
                                                ignore=buildArgs.git_ignore, force=buildArgs.git_force,
-                                               update_ok=buildArgs.git_update))
+                                               update_ok=buildArgs.git_update, omnicache_dir=omnicache_path))
 
     # make Edk2Path object to handle all path operations
     edk2path = Edk2Path(WORKSPACE_PATH, pplist)
@@ -263,6 +270,12 @@ def main():
 
         # check the resulting configuration
         ConfigValidator.check_package_confg(pkgToRunOn, pkg_config, pluginList)
+
+        # get all the defines from the package configuration
+        if "Defines" in pkg_config:
+            for definition_key in pkg_config["Defines"]:
+                definition = pkg_config["Defines"][definition_key]
+                env.SetValue(definition_key, definition, "MuBuild.py from PkgConfig yaml", False)
 
         for Descriptor in pluginList:
             # Get our targets
