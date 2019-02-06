@@ -95,7 +95,7 @@ def check_mu_confg(config, edk2path, pluginList):
         return True
 
     def _is_valid_arch(targets, name):
-        valid_targets = ["AARCH64", "IA32", "X64"]
+        valid_targets = ["AARCH64", "IA32", "X64", "ARM"]
         for target in targets:
             if target not in valid_targets:
                 _mu_error("{0} is not a valid target".format(target))
