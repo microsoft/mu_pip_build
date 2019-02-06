@@ -19,6 +19,15 @@ This is the entrypoint into the CI / Pull Request build and test infrastructure.
 Version History
 ===============
 
+0.3.2
+-----
+
+Main changes:
+- Enabling ARM as a supported architecture.
+
+Bug fixes:
+- N/A
+
 0.3.1
 -----
 
