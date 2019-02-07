@@ -284,7 +284,7 @@ def main():
                 targets = mu_config["Targets"]
 
             for target in targets:
-                logging.critical("---Running {2}: {0} {1}".format(Descriptor.Name, target, pkgToRunOn))
+                MuLogging.log_progress("--Running {2}: {0} {1} --".format(Descriptor.Name, target, pkgToRunOn))
                 total_num += 1
                 ShellEnvironment.CheckpointBuildVars()
                 env = ShellEnvironment.GetBuildVars()
@@ -304,8 +304,7 @@ def main():
                 # Check if need to skip this particular plugin
                 if "skip" in pkg_plugin_configuration and pkg_plugin_configuration["skip"]:
                     tc.SetSkipped()
-                    logging.critical("  --->Test Skipped! %s" %
-                                     Descriptor.Name)
+                    MuLogging.log_progress("--->Test Skipped! %s" % Descriptor.Name)
                 else:
                     try:
                         #   - package is the edk2 path to package.  This means workspace/packagepath relative.
@@ -334,12 +333,12 @@ def main():
                         failure_num += 1
                         if(rc is None):
                             logging.error(
-                                "  --->Test Failed: %s returned NoneType" % Descriptor.Name)
+                                "--->Test Failed: %s returned NoneType" % Descriptor.Name)
                         else:
                             logging.error(
-                                "  --->Test Failed: %s returned %d" % (Descriptor.Name, rc))
+                                "--->Test Failed: %s returned %d" % (Descriptor.Name, rc))
                     else:
-                        logging.info("  --->Test Success {0} {1}".format(Descriptor.Name, target))
+                        MuLogging.log_progress("--->Test Success {0} {1}".format(Descriptor.Name, target))
 
                 # revert to the checkpoint we created previously
                 ShellEnvironment.RevertBuildVars()
@@ -357,10 +356,10 @@ def main():
 
     # Print Overall Success
     if(failure_num != 0):
-        logging.critical("Overall Build Status: Error")
-        logging.critical("There were {0} failures out of {1} attempts".format(failure_num, total_num))
+        logging.error("Overall Build Status: Error")
+        MuLogging.log_progress("There were {0} failures out of {1} attempts".format(failure_num, total_num))
     else:
-        logging.critical("Overall Build Status: Success")
+        MuLogging.log_progress("Overall Build Status: Success")
 
     sys.exit(failure_num)
 
