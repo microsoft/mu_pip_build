@@ -113,7 +113,7 @@ def main():
     mu_config_filepath = os.path.abspath(buildArgs.mu_config)
 
     if mu_config_filepath is None or not os.path.isfile(mu_config_filepath):
-        raise Exception("Invalid path to mu.json file for build: ", mu_config_filepath)
+        raise FileNotFoundError("Invalid path to mu.json file for build: ", mu_config_filepath)
 
     # have a build config file
     with open(mu_config_filepath, 'r') as mu_config_file:
@@ -193,7 +193,7 @@ def main():
             else:
                 logging.critical(
                     "pkg-dir invalid absolute path: {0}".format(mu_pk_path))
-                raise Exception("Invalid Package Path")
+                raise FileNotFoundError("Invalid Package Path")
         else:
             # Check if relative path
             temp = os.path.join(os.getcwd(), mu_pk_path)
@@ -203,7 +203,7 @@ def main():
             else:
                 logging.critical(
                     "pkg-dir invalid relative path: {0}".format(mu_pk_path))
-                raise Exception("Invalid Package Path")
+                raise FileNotFoundError("Invalid Package Path")
 
     # Bring up the common minimum environment.
     logging.log(MuLogging.SECTION, "Bootstrapping Enviroment")
@@ -231,11 +231,11 @@ def main():
         logging.critical("One or more plugins failed to load. Halting build.")
         for a in failedPlugins:
             logging.error("Failed Plugin: {0}".format(a["name"]))
-        raise Exception("One or more plugins failed to load.")
+        raise RuntimeError("One or more plugins failed to load.")
 
     helper = PluginManager.HelperFunctions()
     if(helper.LoadFromPluginManager(pluginManager) > 0):
-        raise Exception("One or more helper plugins failed to load.")
+        raise RuntimeError("One or more helper plugins failed to load.")
 
     pluginList = pluginManager.GetPluginsOfClass(PluginManager.IMuBuildPlugin)
 

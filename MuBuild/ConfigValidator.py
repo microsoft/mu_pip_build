@@ -71,7 +71,7 @@ def check_mu_confg(config, edk2path, pluginList):
     workspace = edk2path.WorkspacePath
 
     def _mu_error(message):
-        raise Exception("Mu Config Error: {0}".format(message))
+        raise RuntimeError("Mu Config Error: {0}".format(message))
 
     def _is_valid_dir(path, name):
         path = os.path.join(workspace, path)
@@ -252,7 +252,7 @@ def check_mu_confg(config, edk2path, pluginList):
 
 def check_package_confg(name, config, pluginList):
     def _mu_error(message):
-        raise Exception("Package {0} Config Error: {1}".format(name, message))
+        raise RuntimeError("Package {0} Config Error: {1}".format(name, message))
 
     config_rules = {
         "required": {
