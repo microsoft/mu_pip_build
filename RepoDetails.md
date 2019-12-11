@@ -5,6 +5,9 @@
     Branch:         {{mu_pip_build.branch}}  
     Commit:         [{{mu_pip_build.commit}}]({{mu_pip_build.commitlink}})  
     Commit Date:    {{mu_pip_build.date}}
+    
+**THIS PROJECT IS NO LONGER ACTIVE** - ACTIVE WORK HAS MOVED TO https://github.com/tianocore/edk2-pytool-extensions
+-----
 
 Provided with config file, mu_build fetches/clones dependencies then compiles every module in each package.
 This is the entrypoint into the CI / Pull Request build and test infrastructure.
